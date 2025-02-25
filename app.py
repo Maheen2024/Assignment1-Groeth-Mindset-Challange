@@ -1,7 +1,6 @@
-
 import streamlit as st
 import pandas as pd
-import io
+from io import BytesIO
 
 # Sample career dataset
 CAREER_DATA = {
@@ -14,6 +13,10 @@ CAREER_DATA = {
 df = pd.DataFrame(CAREER_DATA)
 
 # Streamlit UI
+st.title("Growth Mindset Challange")
+st.write("""Growth Mindset Agentia refers to artificial intelligence designed to learn, adapt, and evolve continuously.
+It embodies a growth mindset, embracing challenges, persisting through obstacles, and viewing failures as opportunities for growth.
+ This agentia learns from data, experiences, and interactions, enabling it to improve performance, innovate, and make informed decisions.""")
 st.title("🚀 Career Assessment App")
 st.write("Enter your skills, interests, and values to get a career recommendation.")
 
@@ -63,8 +66,18 @@ if st.session_state.selected_career:
     st.subheader(f"✅ Selected Career: {st.session_state.selected_career}")
     if st.button("Confirm Selection"):
         st.write(f"You have confirmed: {st.session_state.selected_career}")
+        
         selected_career_data = df[df["Career"] == st.session_state.selected_career]
-        career_data_bytes = io.BytesIO()
-        selected_career_data.to_csv(career_data_bytes, index=False)
-        career_data_bytes.seek(0)
-        st.download_button(label="Download Career Data", data=career_data_bytes, file_name="career_data.csv", mime="text/csv")
+
+        # Save CSV to memory with proper encoding and delimiter
+        csv_bytes = BytesIO()
+        selected_career_data.to_csv(csv_bytes, index=False, sep=",", encoding="utf-8-sig")
+        csv_bytes.seek(0)
+
+        # Download button for CSV
+        st.download_button(
+            label="Download Career Data as CSV",
+            data=csv_bytes,
+            file_name="career_data.csv",
+            mime="text/csv"
+        )
